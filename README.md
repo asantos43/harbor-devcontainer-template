@@ -320,3 +320,9 @@ auto-forward notification or check the Ports panel.
 - Running Terminal-Bench — <https://www.harborframework.com/docs/tutorials/running-terminal-bench>
 - Source — <https://github.com/harbor-framework/harbor>
 - Dev Containers spec — <https://containers.dev>
+
+---
+
+## 10. License
+
+MIT — see [LICENSE](LICENSE).
