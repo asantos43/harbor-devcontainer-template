@@ -26,6 +26,8 @@ cp -r "$template/.devcontainer" "$target/"
 # task/ is where every Harbor task in the project lives; it ships with a README so
 # the convention travels with the project and git actually tracks the directory.
 cp -r "$template/task" "$target/"
+cp "$template/stop-devcontainer.sh" "$target/"
+chmod +x "$target/stop-devcontainer.sh"
 cp "$template/template-gitignore" "$target/.gitignore"
 sed "s|{{PROJECT_NAME}}|$name|g" "$template/project-README.md" > "$target/README.md"
 

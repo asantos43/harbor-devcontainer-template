@@ -41,6 +41,10 @@ for f in "$template"/.devcontainer/* "$template"/.devcontainer/.[!.]*; do
     cp -r "$f" "$target/.devcontainer/$base"
 done
 
+# Root-level helper script travels with the template, so refresh it in place.
+cp "$template/stop-devcontainer.sh" "$target/stop-devcontainer.sh"
+chmod +x "$target/stop-devcontainer.sh"
+
 # Create task/ if this project predates the convention. Never touch tasks already
 # in there - only seed the directory and its README when it is missing.
 if [ ! -d "$target/task" ]; then

@@ -37,6 +37,12 @@ Check the container itself is wired up correctly (after any rebuild):
 .devcontainer/verify-setup.sh      # runs a throwaway oracle trial; expects PASS
 ```
 
+To stop the container, from the **host** (not inside it):
+
+```bash
+./stop-devcontainer.sh             # add --remove to delete it as well
+```
+
 > ⚠️ Always call plain `harbor`. It is a shim at `/usr/local/bin/harbor` that
 > translates `/workspace` paths to the host paths the Docker daemon needs. Calling
 > `~/.local/bin/harbor` or `uvx harbor` directly bypasses it and every trial silently

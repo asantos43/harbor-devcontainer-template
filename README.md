@@ -25,8 +25,9 @@ The workspace is mounted at **`/workspace`**, and Harbor tasks live in **`task/`
 ```
 <project>/
 ├── .devcontainer/
-├── task/          # one directory per Harbor task  <- your work goes here
-├── jobs/          # run output (gitignored, created on first run)
+├── task/                  # one directory per Harbor task  <- your work goes here
+├── jobs/                  # run output (gitignored, created on first run)
+├── stop-devcontainer.sh   # stop the container (run on the host)
 └── README.md
 ```
 
@@ -60,7 +61,8 @@ devcontainer up --workspace-folder ~/dev/projects/data_annotation/harbor-project
 devcontainer exec  --workspace-folder ~/dev/projects/data_annotation/harbor-projects/my-task-project zsh
 ```
 
-`new-harbor-project.sh` copies `.devcontainer/` and `task/`, drops a `.gitignore`
+`new-harbor-project.sh` copies `.devcontainer/`, `task/` and `stop-devcontainer.sh`,
+drops a `.gitignore`
 (which ignores `jobs/` and the secrets file), writes a project `README.md`, and runs
 `git init`. The second argument overrides the parent directory.
 
@@ -151,8 +153,25 @@ published dataset), `harbor agent list` / `harbor dataset list`.
 | `cdw` | `cd` to the mirror of `/workspace` at its host path |
 | `harbor-jobs` | list the most recent job directories |
 | `.devcontainer/verify-setup.sh` | end-to-end self-check; expects `PASS` |
+| `./stop-devcontainer.sh` | **on the host:** stop this project's container |
+| `./stop-devcontainer.sh --remove` | **on the host:** stop and delete it, so the next start re-runs `postCreateCommand` |
 
 ---
+
+### Stopping the container
+
+From the host, in the project directory:
+
+```bash
+./stop-devcontainer.sh              # stop
+./stop-devcontainer.sh --remove     # stop and delete
+```
+
+It finds the container by the `devcontainer.local_folder` label the CLI stamps on it,
+so it keeps working if you rename the container. `--remove` deletes the container but
+never the workspace — that is a bind mount of your project directory — so the next
+start recreates it from the image and re-runs `postCreateCommand`. Running it *inside*
+the container is refused, with the host path to run instead.
 
 ## 5. How the Docker wiring works, and why
 
