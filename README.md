@@ -49,16 +49,18 @@ API keys are **not** taken from your host shell. Put them in
 
 ## 2. Start a new project
 
+From the root of this template repo:
+
 ```bash
-~/dev/templates/harbor-devcontainer/bin/new-harbor-project.sh my-task-project
-code ~/dev/projects/data_annotation/harbor-projects/my-task-project
+./bin/new-harbor-project.sh my-task-project   # prints the path it created
+code <project-dir>                            # then: Reopen in Container
 ```
 
 Then **Reopen in Container** in VS Code. Or, without VS Code:
 
 ```bash
-devcontainer up --workspace-folder ~/dev/projects/data_annotation/harbor-projects/my-task-project
-devcontainer exec  --workspace-folder ~/dev/projects/data_annotation/harbor-projects/my-task-project zsh
+devcontainer up   --workspace-folder <project-dir>
+devcontainer exec --workspace-folder <project-dir> zsh
 ```
 
 `new-harbor-project.sh` copies `.devcontainer/`, `task/` and `stop-devcontainer.sh`,
@@ -235,7 +237,7 @@ Harbor's `requires_python` floor so you can decide.
 To pull a newer template into an **existing** project:
 
 ```bash
-~/dev/templates/harbor-devcontainer/bin/sync-template.sh <project-dir>
+./bin/sync-template.sh <project-dir>   # from the root of this template repo
 ```
 
 It shows a diff first, never overwrites `devcontainer.env`, and never touches tasks

@@ -50,5 +50,6 @@ To stop the container, from the **host** (not inside it):
 
 ## Container, updates, troubleshooting
 
-See the template's README: `~/dev/templates/harbor-devcontainer/README.md`.
+See the template's README:
+<https://github.com/asantos43/harbor-devcontainer-template#readme>.
 To bump the pinned toolchain, run `.devcontainer/update-toolchain.sh` **on the host**.
