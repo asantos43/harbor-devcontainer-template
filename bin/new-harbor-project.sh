@@ -3,7 +3,7 @@
 #
 #   Usage: new-harbor-project.sh <name> [parent-dir]
 #
-# Default parent is ~/dev/projects/data_annotation/harbor-projects.
+# Default parent is the current directory.
 set -euo pipefail
 
 template="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -13,7 +13,7 @@ if [ -z "$name" ]; then
     echo "usage: $(basename "$0") <name> [parent-dir]" >&2
     exit 2
 fi
-parent="${2:-$HOME/dev/projects/data_annotation/harbor-projects}"
+parent="${2:-.}"
 target="$parent/$name"
 
 if [ -e "$target" ] && [ -n "$(ls -A "$target" 2>/dev/null)" ]; then

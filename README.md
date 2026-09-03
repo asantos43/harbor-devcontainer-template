@@ -49,24 +49,27 @@ API keys are **not** taken from your host shell. Put them in
 
 ## 2. Start a new project
 
-From the root of this template repo:
+The project is created in the **current directory**, so `cd` to wherever your projects
+live and call the script by its path in this template checkout:
 
 ```bash
-./bin/new-harbor-project.sh my-task-project   # prints the path it created
-code <project-dir>                            # then: Reopen in Container
+cd <where-you-keep-projects>
+<template>/bin/new-harbor-project.sh my-task-project
+code my-task-project           # then: Reopen in Container
 ```
 
 Then **Reopen in Container** in VS Code. Or, without VS Code:
 
 ```bash
-devcontainer up   --workspace-folder <project-dir>
-devcontainer exec --workspace-folder <project-dir> zsh
+devcontainer up   --workspace-folder my-task-project
+devcontainer exec --workspace-folder my-task-project zsh
 ```
 
 `new-harbor-project.sh` copies `.devcontainer/`, `task/` and `stop-devcontainer.sh`,
 drops a `.gitignore`
 (which ignores `jobs/` and the secrets file), writes a project `README.md`, and runs
-`git init`. The second argument overrides the parent directory.
+`git init`. A second argument overrides the parent directory, so
+`new-harbor-project.sh my-task-project <parent-dir>` works from anywhere.
 
 On first start, `post-create.sh` prints a status block — the harbor version, the host
 Docker server version, and whether the mirror mount works. **If it warns that the
