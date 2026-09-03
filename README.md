@@ -9,12 +9,16 @@ Preinstalled in the container:
 
 | Tool | Source |
 | --- | --- |
-| `harbor` CLI | pinned in `versions.env`, installed with `uv tool install` |
-| Python | provided by `uv` (`uv python install`), pinned in `versions.env` |
-| `uv` | pinned in `versions.env` |
+| `harbor` CLI | Dockerfile; pinned in `versions.env`, installed with `uv tool install` |
+| Python, as `python` and `python3` | Dockerfile; `uv python install --default`, pinned in `versions.env` |
+| `uv` / `uvx` | Dockerfile; pinned in `versions.env` |
+| zsh | Dockerfile (oh-my-zsh, plugins and atuin come from the `common-utils` feature and `post-create.sh`) |
 | Docker CLI + Compose v2 | `docker-outside-of-docker` feature, talking to the **host** daemon |
 | `gh` | `github-cli` feature |
-| zsh, oh-my-zsh | `common-utils` feature, plus plugins and atuin from `post-create.sh` |
+
+The `--default` flag on `uv python install` matters: without it uv installs only a
+versioned `python3.13` and plain `python` / `python3` are absent, which breaks
+anything that shells out to `python3`.
 
 The workspace is mounted at **`/workspace`**, and Harbor tasks live in **`task/`**:
 
