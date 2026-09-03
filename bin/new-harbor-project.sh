@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
 # Scaffold a new Harbor project from this template.
 #
-#   Usage: new-harbor-project.sh <name> [parent-dir]
+#   Usage: new-harbor-project.sh <name> <parent-dir>
 #
-# Default parent is the current directory.
+# parent-dir is required: it is the directory the project is created in. Pass `.` to
+# create it in the current directory.
 set -euo pipefail
 
 template="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 name="${1:-}"
-if [ -z "$name" ]; then
-    echo "usage: $(basename "$0") <name> [parent-dir]" >&2
+parent="${2:-}"
+if [ -z "$name" ] || [ -z "$parent" ]; then
+    echo "usage: $(basename "$0") <name> <parent-dir>" >&2
     exit 2
 fi
-parent="${2:-.}"
+if [ ! -d "$parent" ]; then
+    echo "error: parent directory $parent does not exist" >&2
+    exit 1
+fi
 target="$parent/$name"
 
 if [ -e "$target" ] && [ -n "$(ls -A "$target" 2>/dev/null)" ]; then
