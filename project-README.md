@@ -6,10 +6,13 @@ A [Harbor](https://github.com/harbor-framework/harbor) eval-task project, using 
 standard Harbor dev container. Open in VS Code and **Reopen in Container**; the
 workspace is at `/workspace`.
 
-## Task layout
+## Layout
+
+Harbor tasks live in `task/`, one directory per task. Run output goes to `jobs/` at
+the project root.
 
 ```
-<task-name>/
+task/<task-name>/
 ├── instruction.md          # what the agent is asked to do
 ├── task.toml               # metadata, timeouts, resource requests
 ├── environment/Dockerfile  # the container the agent works in
@@ -20,10 +23,10 @@ workspace is at `/workspace`.
 ## Daily commands
 
 ```bash
-harbor init <task>                                  # scaffold a task
-harbor task start-env -p <task> -e docker -a -i     # interactive task container
-harbor run -p <task> -a oracle                      # reference run; expect reward 1.0
-harbor view ./jobs                                  # browse trajectories
+harbor init -t <name> -o task                            # scaffold task/<name>
+harbor task start-env -p task/<name> -e docker -a -i     # interactive task container
+harbor run  -p task/<name> -a oracle                     # reference run; expect reward 1.0
+harbor view ./jobs                                       # browse trajectories
 ```
 
 Run output goes to `jobs/` (gitignored).

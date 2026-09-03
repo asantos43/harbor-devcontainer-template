@@ -23,6 +23,9 @@ fi
 
 mkdir -p "$target"
 cp -r "$template/.devcontainer" "$target/"
+# task/ is where every Harbor task in the project lives; it ships with a README so
+# the convention travels with the project and git actually tracks the directory.
+cp -r "$template/task" "$target/"
 cp "$template/template-gitignore" "$target/.gitignore"
 sed "s|{{PROJECT_NAME}}|$name|g" "$template/project-README.md" > "$target/README.md"
 
@@ -31,6 +34,6 @@ git -C "$target" rev-parse --git-dir >/dev/null 2>&1 || git -C "$target" init -q
 echo "Created $target"
 echo ""
 echo "Next:"
-echo "  code \"$target\"          # then: Reopen in Container"
-echo "  harbor init my-task       # inside the container, from /workspace"
-echo "  harbor run -p my-task -a oracle"
+echo "  code \"$target\"                  # then: Reopen in Container"
+echo "  harbor init -t my-task -o task    # inside the container, from /workspace"
+echo "  harbor run  -p task/my-task -a oracle"

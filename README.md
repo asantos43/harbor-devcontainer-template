@@ -16,7 +16,15 @@ Preinstalled in the container:
 | `gh` | `github-cli` feature |
 | zsh, oh-my-zsh | `common-utils` feature, plus plugins and atuin from `post-create.sh` |
 
-The workspace is mounted at **`/workspace`**.
+The workspace is mounted at **`/workspace`**, and Harbor tasks live in **`task/`**:
+
+```
+<project>/
+├── .devcontainer/
+├── task/          # one directory per Harbor task  <- your work goes here
+├── jobs/          # run output (gitignored, created on first run)
+└── README.md
+```
 
 ---
 
@@ -48,9 +56,9 @@ devcontainer up --workspace-folder ~/dev/projects/data_annotation/harbor-project
 devcontainer exec  --workspace-folder ~/dev/projects/data_annotation/harbor-projects/my-task-project zsh
 ```
 
-`new-harbor-project.sh` copies `.devcontainer/`, drops a `.gitignore` (which ignores
-`jobs/` and the secrets file), writes a project `README.md`, and runs `git init`.
-The second argument overrides the parent directory.
+`new-harbor-project.sh` copies `.devcontainer/` and `task/`, drops a `.gitignore`
+(which ignores `jobs/` and the secrets file), writes a project `README.md`, and runs
+`git init`. The second argument overrides the parent directory.
 
 On first start, `post-create.sh` prints a status block — the harbor version, the host
 Docker server version, and whether the mirror mount works. **If it warns that the
@@ -76,13 +84,14 @@ mount or the shim is not working.
 Work from `/workspace`.
 
 ```bash
-harbor init ssh-key-pair
+harbor init -t ssh-key-pair -o task
 ```
 
-produces:
+`-o task` puts it in the project's task directory, which is where every task belongs.
+It produces:
 
 ```
-ssh-key-pair/
+task/ssh-key-pair/
 ├── instruction.md          # what the agent is asked to do, in natural language
 ├── task.toml               # metadata: author, difficulty, tags, timeouts, resources
 ├── environment/Dockerfile  # the container the agent works in
@@ -95,7 +104,7 @@ ssh-key-pair/
 Poke at the environment by hand before writing the solution:
 
 ```bash
-harbor task start-env -p ssh-key-pair -e docker -a -i
+harbor task start-env -p task/ssh-key-pair -e docker -a -i
 ```
 
 Run the reference solution end to end. The `oracle` agent just executes
@@ -104,17 +113,18 @@ task is wrong or the container wiring is (see
 [How the Docker wiring works](#5-how-the-docker-wiring-works-and-why)):
 
 ```bash
-harbor run -p ssh-key-pair -a oracle
+harbor run -p task/ssh-key-pair -a oracle
 ```
 
 Then try a real agent, and browse the trajectories:
 
 ```bash
-harbor run -p ssh-key-pair -a terminus-2 -m anthropic/claude-haiku-4-5
+harbor run -p task/ssh-key-pair -a terminus-2 -m anthropic/claude-haiku-4-5
 harbor view ./jobs
 ```
 
-Results land in `./jobs` (override with `-o/--jobs-dir`). Inside each trial, the
+Results land in `./jobs` at the project root, not under `task/` (override with
+`-o/--jobs-dir`). Inside each trial, the
 reward comes from **`/logs/verifier/reward.txt`**, written by the verifier inside the
 task container and collected through a bind mount — which is why the path handling
 below matters.
@@ -129,10 +139,10 @@ published dataset), `harbor agent list` / `harbor dataset list`.
 
 | Command | What it does |
 | --- | --- |
-| `harbor init <task>` | scaffold a new task |
-| `harbor task start-env -p <task> -e docker -a -i` | interactive shell in the task container |
-| `harbor run -p <task> -a oracle` | run the reference solution; expect reward 1.0 |
-| `harbor run -p <task> -a <agent> -m <model>` | run a real agent |
+| `harbor init -t <name> -o task` | scaffold a new task into `task/<name>` |
+| `harbor task start-env -p task/<name> -e docker -a -i` | interactive shell in the task container |
+| `harbor run -p task/<name> -a oracle` | run the reference solution; expect reward 1.0 |
+| `harbor run -p task/<name> -a <agent> -m <model>` | run a real agent |
 | `harbor view ./jobs` | web UI over past trials |
 | `cdw` | `cd` to the mirror of `/workspace` at its host path |
 | `harbor-jobs` | list the most recent job directories |
@@ -205,9 +215,11 @@ To pull a newer template into an **existing** project:
 ~/dev/templates/harbor-devcontainer/bin/sync-template.sh <project-dir>
 ```
 
-It shows a diff first and never overwrites `devcontainer.env`. The workflow is: bump
-and commit in the template repo, then `sync-template.sh` into each project, then
-rebuild and run `.devcontainer/verify-setup.sh`.
+It shows a diff first, never overwrites `devcontainer.env`, and never touches tasks
+already in `task/` (it only creates that directory if the project predates the
+convention). The workflow is: bump and commit in the template repo, then
+`sync-template.sh` into each project, then rebuild and run
+`.devcontainer/verify-setup.sh`.
 
 ---
 

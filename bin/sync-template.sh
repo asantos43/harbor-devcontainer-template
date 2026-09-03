@@ -41,5 +41,12 @@ for f in "$template"/.devcontainer/* "$template"/.devcontainer/.[!.]*; do
     cp -r "$f" "$target/.devcontainer/$base"
 done
 
+# Create task/ if this project predates the convention. Never touch tasks already
+# in there - only seed the directory and its README when it is missing.
+if [ ! -d "$target/task" ]; then
+    cp -r "$template/task" "$target/"
+    echo "Created $target/task (new convention: Harbor tasks live here)."
+fi
+
 echo "Applied. Rebuild the container, then re-verify:"
-echo "  harbor run -p <task> -a oracle    # must report reward 1.0"
+echo "  .devcontainer/verify-setup.sh     # inside the container; must print PASS"
