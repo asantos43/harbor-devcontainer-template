@@ -1,0 +1,14 @@
+# Harbor run output: trajectories, logs and artifacts. Large, regenerable, and it
+# contains whatever the agent produced - never commit it.
+jobs/
+
+# Secrets passed to the container with --env-file (created by initialize.sh).
+.devcontainer/devcontainer.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Editors / OS
+.DS_Store

@@ -1,0 +1,91 @@
+{
+    "name": "Harbor Dev",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "."
+    },
+
+    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+
+    "mounts": [
+        // Mirror mount: the SAME directory as /workspace, at the absolute path the HOST
+        // knows it by. Harbor bind-mounts its jobs directory into every task container,
+        // and those mounts are resolved by the host daemon, which has no /workspace. The
+        // harbor shim (/usr/local/bin/harbor) re-enters this path before running, so
+        // every path Harbor derives is valid on both sides of the socket. Removing this
+        // mount makes every trial score 0. See .devcontainer/harbor-shim.sh.
+        "source=${localWorkspaceFolder},target=${localWorkspaceFolder},type=bind",
+
+        // Datasets and tasks Harbor downloads are large; keep them across rebuilds and
+        // share them between every project built from this template.
+        "source=harbor-cache,target=/root/.cache/harbor,type=volume"
+
+        // The docker socket is NOT mounted here on purpose: the docker-outside-of-docker
+        // feature already declares that mount (and the entrypoint that exposes it at
+        // /var/run/docker.sock inside the container).
+    ],
+
+    "containerEnv": {
+        "HOST_WORKSPACE": "${localWorkspaceFolder}",
+        // Without this the image has no timezone, so "local time" is UTC and every
+        // timestamp Harbor writes is three hours off the wall clock.
+        "TZ": "America/Sao_Paulo"
+    },
+
+    "runArgs": [
+        "--name", "${localWorkspaceFolderBasename}-devcontainer",
+        "--hostname", "${localWorkspaceFolderBasename}",
+        // API keys and other secrets. Created by initialize.sh if absent, gitignored.
+        "--env-file", "${localWorkspaceFolder}/.devcontainer/devcontainer.env"
+    ],
+
+    // Runs on the HOST before the container is created - early enough to create the
+    // --env-file above, which docker refuses to start without.
+    "initializeCommand": "bash ${localWorkspaceFolder}/.devcontainer/initialize.sh",
+    "postCreateCommand": "bash .devcontainer/post-create.sh",
+
+    "remoteUser": "root",
+
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": true,
+            "installOhMyZsh": true,
+            "configureZshAsDefaultShell": true,
+            "username": "root"
+        },
+        // moby:false installs the Docker CE client, matching the host's Docker CE daemon.
+        // This feature also supplies the docker.sock mount and securityOpt label=disable,
+        // which is what keeps bind mounts working under SELinux on Fedora.
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+            "moby": false,
+            "dockerDashComposeVersion": "v2"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "werbenhu.terminalright",
+                "ms-python.python",
+                "charliermarsh.ruff",
+                "tamasfe.even-better-toml",
+                "anthropic.claude-code"
+            ]
+        }
+    },
+
+    // `harbor view` binds 127.0.0.1 and takes the first free port in 8080-8089,
+    // so 8080 is the common case; the rest of the range is covered by the catch-all.
+    "forwardPorts": [8080],
+    "portsAttributes": {
+        "8080": {
+            "label": "harbor view",
+            "onAutoForward": "notify"
+        }
+    },
+    "otherPortsAttributes": {
+        "onAutoForward": "notify"
+    }
+}
