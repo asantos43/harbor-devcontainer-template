@@ -1,1 +1,4 @@
 .devcontainer/devcontainer.env
+
+# Personal Claude Code settings (MCP approvals, local overrides).
+.claude/settings.local.json
