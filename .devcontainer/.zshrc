@@ -34,6 +34,16 @@ cdw() { cd "${HOST_WORKSPACE:-/workspace}"; }
 alias harbor-jobs='ls -1t /workspace/jobs 2>/dev/null | head'
 
 # ---------------------------------------------------------------------------
+# JavaScript toolchain (nvm, node and bun; installed under $HOME by post-create.sh)
+# ---------------------------------------------------------------------------
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+
+export BUN_INSTALL="$HOME/.bun"
+[ -d "$BUN_INSTALL/bin" ] && export PATH="$BUN_INSTALL/bin:$PATH"
+
+# ---------------------------------------------------------------------------
 # atuin (shell history)
 # ---------------------------------------------------------------------------
 [ -s "$HOME/.atuin/bin/env" ] && . "$HOME/.atuin/bin/env"

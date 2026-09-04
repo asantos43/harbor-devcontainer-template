@@ -13,6 +13,7 @@ Preinstalled in the container:
 | Python, as `python` and `python3` | Dockerfile; `uv python install --default`, pinned in `versions.env` |
 | `uv` / `uvx` | Dockerfile; pinned in `versions.env` |
 | zsh | Dockerfile (oh-my-zsh, plugins and atuin come from the `common-utils` feature and `post-create.sh`) |
+| Node LTS via `nvm`, and `bun` | `post-create.sh`; installed under `$HOME`, put on `PATH` by `.devcontainer/.zshrc` |
 | Docker CLI + Compose v2 | `docker-outside-of-docker` feature, talking to the **host** daemon |
 | `gh` | `github-cli` feature |
 
