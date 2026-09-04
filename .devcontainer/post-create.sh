@@ -56,6 +56,7 @@ if [ ! -s "$NVM_DIR/nvm.sh" ]; then
 fi
 
 node_version='NOT FOUND'
+
 if [ -s "$NVM_DIR/nvm.sh" ]; then
     # nvm.sh is not written for `set -eu`: it reads unset variables and returns
     # non-zero from harmless paths, so relax both around it.
@@ -72,6 +73,7 @@ if [ ! -x "$HOME/.bun/bin/bun" ]; then
     curl -fsSL https://bun.sh/install | SHELL=/bin/sh bash >/dev/null 2>&1 \
         || echo "warning: bun install failed" >&2
 fi
+
 bun_version="$("$HOME/.bun/bin/bun" --version 2>/dev/null || echo 'NOT FOUND')"
 
 # Task tests, agents and VS Code tasks shell out non-interactively, where no rc file
