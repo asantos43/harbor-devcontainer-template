@@ -19,6 +19,19 @@ git push -u origin <short-descriptive-name>
 gh pr create --fill        # gh is installed on the host and in the container
 ```
 
+**Once the PR is merged, delete the branch** and return to `master`:
+
+```bash
+git checkout master && git pull --ff-only
+git branch -d <short-descriptive-name>
+git push origin --delete <short-descriptive-name>
+```
+
+This is not only convention: a repository ruleset protects `master` against direct
+pushes, force-pushes and deletion, and requires a pull request, so the branch is the
+only way in. The ruleset targets the default branch only, which is what leaves merged
+feature branches deletable.
+
 The PR comes after verification, not before. That order matters here more than in an
 ordinary repo: `.devcontainer/` is copied verbatim into downstream projects, where a
 broken `post-create.sh` or shim produces silently-zero rewards rather than an error, so
